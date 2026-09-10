@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoPot — สวนแนวตั้งอัจฉริยะสำหรับคอนโด</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep: #16221c;
+    --bg-panel: #1d2e25;
+    --paper: #eee8d8;
+    --paper-dim: #cfc9b8;
+    --sage: #7f9c7c;
+    --sage-soft: #34452f;
+    --gold: #c9a83a;
+    --gold-soft: #7a6a2c;
+    --ink: #101a14;
+    --line: rgba(238,232,216,0.14);
+    --radius: 4px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg-deep);
+    color:var(--paper);
+    font-family:'Noto Sans Thai',sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Noto Serif Thai',serif;
+    font-weight:600;
+    line-height:1.3;
+    margin:0;
+  }
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 28px;}
+  section{padding:96px 0;}
+  @media (max-width:720px){ section{padding:64px 0;} }
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky;top:0;z-index:20;
+    background:rgba(22,34,28,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    max-width:1100px;margin:0 auto;padding:18px 28px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{font-family:'Noto Serif Thai',serif;font-weight:700;font-size:20px;letter-spacing:0.02em;}
+  .brand span{color:var(--gold);}
+  .nav-cta{
+    font-size:14px;font-weight:600;color:var(--ink);
+    background:var(--gold);padding:10px 20px;border-radius:var(--radius);
+    text-decoration:none;white-space:nowrap;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding-top:72px;padding-bottom:72px;
+    display:grid;grid-template-columns:1.1fr 0.9fr;gap:56px;align-items:center;
+  }
+  @media (max-width:860px){ .hero{grid-template-columns:1fr;} }
+  .eyebrow-plain{color:var(--sage);font-size:15px;font-weight:600;margin-bottom:18px;}
+  .hero h1{font-size:clamp(32px,4.4vw,48px);color:var(--paper);}
+  .hero p.lede{
+    margin-top:22px;font-size:18px;color:var(--paper-dim);max-width:46ch;
+  }
+  .hero-actions{margin-top:34px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+  .btn-primary{
+    background:var(--gold);color:var(--ink);font-weight:700;font-size:16px;
+    padding:15px 30px;border-radius:var(--radius);border:none;cursor:pointer;
+    text-decoration:none;display:inline-block;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,58,0.28);}
+  .hint-small{font-size:13px;color:var(--paper-dim);opacity:0.85;}
+
+  /* modular wall illustration */
+  .pot-grid{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:28px;
+    display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+    position:relative;
+  }
+  .pot{
+    aspect-ratio:1/1.05;
+    border-radius:3px;
+    background:linear-gradient(180deg, var(--sage-soft), var(--bg-panel) 70%);
+    border:1px solid var(--line);
+    position:relative;
+    overflow:visible;
+  }
+  .pot::before{
+    content:"";
+    position:absolute;left:50%;bottom:64%;
+    width:2px;height:34%;
+    background:var(--sage);
+    transform:translateX(-50%);
+    border-radius:2px;
+  }
+  .pot::after{
+    content:"";
+    position:absolute;left:50%;bottom:88%;
+    width:26px;height:16px;
+    background:var(--sage);
+    border-radius:0 70% 0 70%;
+    transform:translate(-50%,0) rotate(-8deg);
+  }
+  .pot.glow::after{background:#a7c19f;}
+  .pot-grid .light-strip{
+    position:absolute;top:14px;left:14px;right:14px;height:3px;
+    background:linear-gradient(90deg,transparent, var(--gold), transparent);
+    opacity:0.7;
+  }
+
+  /* ---------- Problem ---------- */
+  .problem{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-panel);}
+  .problem .wrap{max-width:800px;}
+  .problem h2{font-size:clamp(24px,3vw,32px);color:var(--paper);}
+  .problem p{margin-top:18px;color:var(--paper-dim);font-size:17px;max-width:58ch;}
+
+  /* ---------- Features ---------- */
+  .section-head{max-width:640px;margin-bottom:52px;}
+  .section-head .kicker{color:var(--sage);font-weight:600;font-size:15px;margin-bottom:10px;}
+  .section-head h2{font-size:clamp(26px,3.4vw,34px);}
+  .features{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:2px;
+    background:var(--line);border:1px solid var(--line);
+  }
+  @media (max-width:720px){ .features{grid-template-columns:1fr;} }
+  .feature{
+    background:var(--bg-deep);padding:36px;
+  }
+  .feature .num{font-family:'Noto Serif Thai',serif;color:var(--gold);font-size:15px;margin-bottom:14px;}
+  .feature h3{font-size:20px;color:var(--paper);margin-bottom:10px;}
+  .feature p{color:var(--paper-dim);font-size:15.5px;}
+
+  /* ---------- Social proof ---------- */
+  .proof{background:var(--bg-panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .proof blockquote{
+    margin:0 auto;max-width:640px;text-align:center;
+    font-family:'Noto Serif Thai',serif;font-size:clamp(20px,2.6vw,26px);
+    color:var(--paper);line-height:1.6;
+  }
+  .proof cite{
+    display:block;margin-top:20px;font-style:normal;font-size:14px;
+    color:var(--sage);font-family:'Noto Sans Thai',sans-serif;
+  }
+
+  /* ---------- Pricing / Pre-order ---------- */
+  .preorder{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;}
+  @media (max-width:860px){ .preorder{grid-template-columns:1fr;} }
+  .price-card{
+    background:var(--bg-panel);border:1px solid var(--line);border-radius:6px;padding:36px;
+  }
+  .price-card .amount{font-family:'Noto Serif Thai',serif;font-size:40px;color:var(--paper);}
+  .price-card .amount small{font-size:16px;color:var(--paper-dim);font-family:'Noto Sans Thai',sans-serif;}
+  .price-list{margin:24px 0 0;padding:0;list-style:none;}
+  .price-list li{
+    padding:12px 0;border-top:1px solid var(--line);color:var(--paper-dim);font-size:15px;
+    display:flex;gap:10px;
+  }
+  .price-list li::before{content:"—";color:var(--gold);flex-shrink:0;}
+
+  form.order-form{
+    background:var(--bg-panel);border:1px solid var(--line);border-radius:6px;padding:36px;
+  }
+  form.order-form h3{font-size:20px;color:var(--paper);margin-bottom:6px;}
+  form.order-form p.small{color:var(--paper-dim);font-size:14px;margin:0 0 24px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;color:var(--sage);margin-bottom:6px;font-weight:600;}
+  .field input{
+    width:100%;padding:13px 14px;border-radius:var(--radius);
+    border:1px solid var(--line);background:var(--bg-deep);color:var(--paper);
+    font-family:'Noto Sans Thai',sans-serif;font-size:15px;
+  }
+  .field input:focus{outline:2px solid var(--gold);outline-offset:1px;}
+  .submit-row{margin-top:24px;}
+  .btn-full{width:100%;text-align:center;}
+  .disclaimer{margin-top:16px;font-size:12.5px;color:var(--paper-dim);opacity:0.8;}
+  .confirm-state{display:none;text-align:center;padding:20px 0;}
+  .confirm-state.show{display:block;}
+  .confirm-state .check{
+    width:44px;height:44px;border-radius:50%;background:var(--sage-soft);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 16px;
+    color:var(--gold);font-size:20px;
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq-item{border-top:1px solid var(--line);}
+  .faq-item:last-child{border-bottom:1px solid var(--line);}
+  .faq-q{
+    width:100%;text-align:right;background:none;border:none;color:var(--paper);
+    font-family:'Noto Sans Thai',sans-serif;font-size:17px;font-weight:600;
+    padding:22px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+    text-align:left;
+  }
+  .faq-q .icon{color:var(--gold);font-size:20px;transition:transform .2s ease;}
+  .faq-item.open .faq-q .icon{transform:rotate(45deg);}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .faq-a p{color:var(--paper-dim);font-size:15.5px;padding-bottom:22px;margin:0;max-width:62ch;}
+
+  footer{
+    border-top:1px solid var(--line);padding:40px 0;text-align:center;
+    color:var(--paper-dim);font-size:13.5px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand">Eco<span>Pot</span></div>
+    <a href="#order" class="nav-cta">สั่งจองล่วงหน้า</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap" style="display:contents;">
+    <div>
+      <div class="eyebrow-plain">สวนแนวตั้งอัจฉริยะสำหรับคอนโด</div>
+      <h1>ปลูกผักในคอนโดได้จริง<br>แม้ไม่มีเวลารดน้ำทุกวัน</h1>
+      <p class="lede">EcoPot ดูแลระบบรดน้ำให้อัตโนมัตินาน 7-14 วัน พร้อม Grow Light ในตัวสำหรับมุมที่แสงแดดเข้าไม่ถึง — ติดตั้งง่าย ใช้พื้นที่น้อย เหมาะกับชีวิตที่ไม่มีเวลาดูแลต้นไม้ทุกวัน</p>
+      <div class="hero-actions">
+        <a href="#order" class="btn-primary">สั่งจองล่วงหน้า</a>
+        <span class="hint-small">มัดจำ 300 บาท คืนเงิน 100% หากไม่ผลิต</span>
+      </div>
+    </div>
+    <div class="pot-grid">
+      <div class="light-strip"></div>
+      <div class="pot"></div>
+      <div class="pot glow"></div>
+      <div class="pot"></div>
+      <div class="pot glow"></div>
+      <div class="pot"></div>
+      <div class="pot glow"></div>
+    </div>
+  </div>
+</section>
+
+<section class="problem">
+  <div class="wrap">
+    <h2>ทำงานหนัก กลับบ้านดึก แต่ก็ยังอยากมีสวนผักของตัวเอง</h2>
+    <p>คอนโดพื้นที่จำกัด แสงแดดเข้าไม่ถึง แถมไม่มีเวลารดน้ำทุกวัน — นี่คือเหตุผลที่คนส่วนใหญ่เลิกล้มความตั้งใจปลูกผักกินเองไปก่อนจะเริ่มด้วยซ้ำ</p>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">ออกแบบมาเพื่อชีวิตที่ไม่มีเวลา</div>
+      <h2>ดูแลน้อยลง แต่ได้ผักสดจริงมากขึ้น</h2>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="num">01</div>
+        <h3>รดน้ำอัตโนมัติ 7–14 วัน</h3>
+        <p>ระบบจ่ายน้ำอัตโนมัติ ไม่ต้องเฝ้าดูแลรายวัน แจ้งเตือนผ่านแอปเมื่อถึงเวลาเติมน้ำ</p>
+      </div>
+      <div class="feature">
+        <div class="num">02</div>
+        <h3>Grow Light ในตัว</h3>
+        <p>ปลูกได้แม้มุมห้องที่แสงธรรมชาติน้อย ปรับตามการเจริญเติบโตของพืชแต่ละชนิด</p>
+      </div>
+      <div class="feature">
+        <div class="num">03</div>
+        <h3>โครงโมดูลาร์ปรับขนาดได้</h3>
+        <p>เริ่มจากชุดเล็กแล้วขยายเพิ่มได้ทีหลัง เหมาะกับพื้นที่ผนังคอนโดทุกขนาด</p>
+      </div>
+      <div class="feature">
+        <div class="num">04</div>
+        <h3>ติดตั้งเองได้ใน 15 นาที</h3>
+        <p>ไม่ต้องเจาะผนัง ไม่ต้องช่าง ประกอบด้วยระบบคลิกล็อกที่ออกแบบมาให้มือใหม่ทำได้จริง</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="proof">
+  <div class="wrap">
+    <blockquote>
+      "ปกติลืมรดน้ำต้นไม้บ่อยมาก แต่ตั้งแต่ใช้ระบบนี้ ผักยังสดอยู่แม้ไปทำงานต่างจังหวัดเป็นสัปดาห์"
+      <cite>ผู้ทดสอบต้นแบบ EcoPot, คอนโดย่านสุขุมวิท</cite>
+    </blockquote>
+  </div>
+</section>
+
+<section id="order">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">รอบพรีออเดอร์แรก</div>
+      <h2>จองสิทธิ์ก่อนใคร ราคาพิเศษเฉพาะรอบแรก</h2>
+    </div>
+    <div class="preorder">
+      <div class="price-card">
+        <div class="amount">฿2,990 <small>/ ชุดเริ่มต้น 9 ช่อง</small></div>
+        <ul class="price-list">
+          <li>โครงโมดูลาร์ 9 ช่องปลูก พร้อม Grow Light ในตัว</li>
+          <li>ระบบรดน้ำอัตโนมัติ ตั้งรอบได้ 7–14 วัน</li>
+          <li>แอปควบคุมและแจ้งเตือนการดูแล</li>
+          <li>ชุดเมล็ดพันธุ์เริ่มต้น 3 ชนิด</li>
+          <li>จัดส่งฟรีในเขตกรุงเทพฯ-ปริมณฑล</li>
+        </ul>
+      </div>
+
+      <form class="order-form" id="orderForm">
+        <div id="formFields">
+          <h3>มัดจำ 300 บาท เพื่อจองสิทธิ์</h3>
+          <p class="small">คืนเงิน 100% หากไม่มีการผลิตจริง — ยืนยันผ่านอีเมลภายใน 24 ชม.</p>
+          <div class="field">
+            <label for="name">ชื่อ-นามสกุล</label>
+            <input type="text" id="name" required placeholder="ชื่อของคุณ">
+          </div>
+          <div class="field">
+            <label for="phone">เบอร์โทรศัพท์</label>
+            <input type="tel" id="phone" required placeholder="08X-XXX-XXXX">
+          </div>
+          <div class="field">
+            <label for="email">อีเมล</label>
+            <input type="email" id="email" required placeholder="you@email.com">
+          </div>
+          <div class="submit-row">
+            <button type="submit" class="btn-primary btn-full">มัดจำ 300 บาท เพื่อจองสิทธิ์</button>
+          </div>
+          <p class="disclaimer">นี่คือรอบพรีออเดอร์ล่วงหน้า สินค้ายังไม่พร้อมส่งทันที ประเมินระยะเวลาจัดส่ง 8-10 สัปดาห์หลังปิดรอบจอง</p>
+        </div>
+        <div class="confirm-state" id="confirmState">
+          <div class="check">✓</div>
+          <h3>จองสิทธิ์เรียบร้อยแล้ว</h3>
+          <p class="small">ทีมงานจะติดต่อกลับเพื่อยืนยันการชำระเงินมัดจำภายใน 24 ชม.</p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="border-top:1px solid var(--line);">
+  <div class="wrap" style="max-width:760px;">
+    <div class="section-head" style="margin-bottom:8px;">
+      <div class="kicker">คำถามที่พบบ่อย</div>
+      <h2>ก่อนตัดสินใจจอง</h2>
+    </div>
+    <div id="faqList">
+      <div class="faq-item">
+        <button class="faq-q">ถ้าไม่มีการผลิตจริง เงินมัดจำคืนไหม<span class="icon">+</span></button>
+        <div class="faq-a"><p>คืนเงิน 100% ภายใน 7 วันทำการ หากไม่มีการผลิตหรือคุณยกเลิกก่อนปิดรอบจอง</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">ต้องดูแลบ่อยแค่ไหนถ้าไม่มีเวลาเลย<span class="icon">+</span></button>
+        <div class="faq-a"><p>ระบบรดน้ำอัตโนมัติทำงานได้เอง 7-14 วันต่อรอบ แอปจะแจ้งเตือนล่วงหน้าเมื่อถึงเวลาต้องเติมน้ำหรือดูแลเพิ่มเติม</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">ปลูกผักแบบไหนได้บ้าง<span class="icon">+</span></button>
+        <div class="faq-a"><p>เหมาะกับผักใบ สมุนไพร และผักสลัดอายุสั้น เช่น คะน้า ผักบุ้ง โหระพา และสลัดกรีนโอ๊ค</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">ใช้เวลากี่วันถึงจะได้ของ<span class="icon">+</span></button>
+        <div class="faq-a"><p>ประเมินระยะเวลาผลิตและจัดส่ง 8-10 สัปดาห์หลังปิดรอบพรีออเดอร์แรก</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">EcoPot — สวนแนวตั้งอัจฉริยะที่เข้าใจชีวิตคนเมือง</div>
+</footer>
+
+<script>
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    const q = item.querySelector('.faq-q');
+    const a = item.querySelector('.faq-a');
+    q.addEventListener('click', ()=>{
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(o=>{
+        o.classList.remove('open');
+        o.querySelector('.faq-a').style.maxHeight = null;
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        a.style.maxHeight = a.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // Fake-door form: no backend, just show confirmation state for testing UX/intent
+  const form = document.getElementById('orderForm');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    document.getElementById('formFields').style.display = 'none';
+    document.getElementById('confirmState').classList.add('show');
+  });
+</script>
+
+</body>
+</html>
