@@ -313,21 +313,21 @@
         </ul>
       </div>
 
-  <form class="order-form" id="orderForm" action="https://formspree.io/f/xgaedkrr" method="POST">
+      <form class="order-form" id="orderForm" action="https://formspree.io/f/xgaedkrr" method="POST">
         <div id="formFields">
           <h3>มัดจำ 300 บาท เพื่อจองสิทธิ์</h3>
           <p class="small">คืนเงิน 100% หากไม่มีการผลิตจริง — ยืนยันผ่านอีเมลภายใน 24 ชม.</p>
           <div class="field">
             <label for="name">ชื่อ-นามสกุล</label>
-            <input type="text" id="name" required placeholder="ชื่อของคุณ">
+            <input type="text" id="name" name="name" required placeholder="ชื่อของคุณ">
           </div>
           <div class="field">
             <label for="phone">เบอร์โทรศัพท์</label>
-            <input type="tel" id="phone" required placeholder="08X-XXX-XXXX">
+            <input type="tel" id="phone" name="phone" required placeholder="08X-XXX-XXXX">
           </div>
           <div class="field">
             <label for="email">อีเมล</label>
-            <input type="email" id="email" required placeholder="you@email.com">
+            <input type="email" id="email" name="email" required placeholder="you@email.com">
           </div>
           <div class="submit-row">
             <button type="submit" class="btn-primary btn-full">มัดจำ 300 บาท เพื่อจองสิทธิ์</button>
@@ -393,12 +393,42 @@
     });
   });
 
-  // Fake-door form: no backend, just show confirmation state for testing UX/intent
+  // Submit form data to Formspree via AJAX, then show confirmation state
   const form = document.getElementById('orderForm');
   form.addEventListener('submit', function(e){
     e.preventDefault();
-    document.getElementById('formFields').style.display = 'none';
-    document.getElementById('confirmState').classList.add('show');
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'กำลังส่งข้อมูล...';
+
+    const data = new FormData(form);
+
+    fetch(form.action, {
+      method: form.method,
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    }).then(response => {
+      if (response.ok) {
+        document.getElementById('formFields').style.display = 'none';
+        document.getElementById('confirmState').classList.add('show');
+      } else {
+        response.json().then(data => {
+          alert(
+            (data && data.errors)
+              ? data.errors.map(err => err.message).join(', ')
+              : 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'
+          );
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
+        });
+      }
+    }).catch(() => {
+      alert('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+    });
   });
 </script>
 
